@@ -23,28 +23,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: '1:0:web:replace',
-    messagingSenderId: '0',
-    projectId: 'demo-brijyatra-replace-me',
-    authDomain: 'demo-brijyatra-replace-me.firebaseapp.com',
-    storageBucket: 'demo-brijyatra-replace-me.appspot.com',
+    apiKey: 'AIzaSyAoQ4kkCJvfpbqFuY-j4lq5lYtzxfPbIU0',
+    appId: '1:274212991371:web:08fbdee3757a3cbcd83f8e',
+    messagingSenderId: '274212991371',
+    projectId: 'brijyatra-8881f',
+    authDomain: 'brijyatra-8881f.firebaseapp.com',
+    storageBucket: 'brijyatra-8881f.firebasestorage.app',
+    measurementId: 'G-KSYXKWT5VL',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyReplaceMe9283746258473628',
-    appId: '1:123456789012:android:abcdef0123456789abcd',
-    messagingSenderId: '123456789012',
-    projectId: 'demo-brijyatra-replace-me',
-    storageBucket: 'demo-brijyatra-replace-me.appspot.com',
+    apiKey: 'AIzaSyDloTvzKwGFSsm0q0z99aJl1I-q0kSUbBM',
+    appId: '1:274212991371:android:372d79c0f8a75b53d83f8e',
+    messagingSenderId: '274212991371',
+    projectId: 'brijyatra-8881f',
+    storageBucket: 'brijyatra-8881f.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyReplaceMeIOS',
-    appId: '1:123456789012:ios:abcdef0123456789abcd',
-    messagingSenderId: '123456789012',
-    projectId: 'demo-brijyatra-replace-me',
-    storageBucket: 'demo-brijyatra-replace-me.appspot.com',
+    apiKey: 'AIzaSyDeSSxs1TKcBpfJiFC_OR9BSYtkZw_U384',
+    appId: '1:274212991371:ios:99daf4bb5ffa68bed83f8e',
+    messagingSenderId: '274212991371',
+    projectId: 'brijyatra-8881f',
+    storageBucket: 'brijyatra-8881f.firebasestorage.app',
     iosBundleId: 'com.brijyatra.brijyatraMobile',
   );
+
 }

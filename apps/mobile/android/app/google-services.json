@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "demo-brijyatra-replace-me",
-    "storage_bucket": "demo-brijyatra-replace-me.appspot.com"
+    "project_number": "274212991371",
+    "project_id": "brijyatra-8881f",
+    "storage_bucket": "brijyatra-8881f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef0123456789abcd",
+        "mobilesdk_app_id": "1:274212991371:android:372d79c0f8a75b53d83f8e",
         "android_client_info": {
           "package_name": "com.brijyatra.brijyatra_mobile"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDemoKeyReplaceMe9283746258473628"
+          "current_key": "AIzaSyDloTvzKwGFSsm0q0z99aJl1I-q0kSUbBM"
         }
       ],
       "services": {

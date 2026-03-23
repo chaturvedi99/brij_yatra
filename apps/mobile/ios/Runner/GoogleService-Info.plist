@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyDemoKeyReplaceMeIOS</string>
+	<string>AIzaSyDeSSxs1TKcBpfJiFC_OR9BSYtkZw_U384</string>
 	<key>GCM_SENDER_ID</key>
-	<string>123456789012</string>
+	<string>274212991371</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.brijyatra.brijyatraMobile</string>
 	<key>PROJECT_ID</key>
-	<string>demo-brijyatra-replace-me</string>
+	<string>brijyatra-8881f</string>
 	<key>STORAGE_BUCKET</key>
-	<string>demo-brijyatra-replace-me.appspot.com</string>
+	<string>brijyatra-8881f.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:123456789012:ios:abcdef0123456789abcd</string>
+	<string>1:274212991371:ios:99daf4bb5ffa68bed83f8e</string>
 </dict>
 </plist>

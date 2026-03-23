@@ -30,6 +30,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     super.dispose();
   }
 
+  String _friendlyError(Object error) {
+    final raw = error.toString();
+    // Common production misconfiguration: API rejects bootstrap token as unauthorized.
+    if (raw.contains('ApiException(401)')) {
+      return 'Sign-in failed (401). Check API Firebase config: FIREBASE_PROJECT_ID must be '
+          'brijyatra-8881f and DEV_BYPASS_AUTH should be disabled in production.';
+    }
+    return raw;
+  }
+
   Future<void> _bootstrapFirebase() async {
     setState(() {
       _busy = true;
@@ -44,12 +54,24 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           password: password,
         );
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-          await cred.user?.updateDisplayName(_name.text.trim());
+        // With email enumeration protection, web can return `invalid-credential`
+        // instead of `user-not-found`. Try registration fallback in both cases.
+        if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          try {
+            final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+            await cred.user?.updateDisplayName(_name.text.trim());
+          } on FirebaseAuthException catch (createErr) {
+            if (createErr.code == 'email-already-in-use') {
+              throw FirebaseAuthException(
+                code: 'invalid-credential',
+                message: 'Email already exists. Please use the correct password.',
+              );
+            }
+            rethrow;
+          }
         } else {
           rethrow;
         }
@@ -72,7 +94,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       if (!mounted) return;
       context.go(role == 'guide' ? '/g/home' : '/home');
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = _friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -101,7 +123,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       if (!mounted) return;
       context.go(role == 'guide' ? '/g/home' : '/home');
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = _friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

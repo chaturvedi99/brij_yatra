@@ -61,21 +61,47 @@ async fn list_themes(State(state): State<AppState>, _user: AuthUser) -> ApiResul
         "#,
     )
     .fetch_all(&state.pool)
-    .await
-    .map_err(|e| ApiError::Internal(e.into()))?;
+    .await;
 
-    let out = rows
-        .into_iter()
-        .map(|r| ThemeListItem {
-            id: r.id,
-            slug: r.slug,
-            name: r.name,
-            kind: r.kind,
-            summary: r.summary,
-            hero_media: r.hero_media,
-            config_version: r.config_version,
-        })
-        .collect();
+    let out: Vec<ThemeListItem> = match rows {
+        Ok(rows) => rows
+            .into_iter()
+            .map(|r| ThemeListItem {
+                id: r.id,
+                slug: r.slug,
+                name: r.name,
+                kind: r.kind,
+                summary: r.summary,
+                hero_media: r.hero_media,
+                config_version: r.config_version,
+            })
+            .collect(),
+        Err(_) => {
+            // Fallback for environments with older theme schema/data issues.
+            let basic_rows = sqlx::query_as::<_, (Uuid, String, String, String)>(
+                r#"
+                SELECT id, slug, name, COALESCE(summary, '') as summary
+                FROM themes
+                ORDER BY name
+                "#,
+            )
+            .fetch_all(&state.pool)
+            .await
+            .map_err(|e| ApiError::Internal(e.into()))?;
+            basic_rows
+                .into_iter()
+                .map(|(id, slug, name, summary)| ThemeListItem {
+                    id,
+                    slug,
+                    name,
+                    kind: "general".to_string(),
+                    summary,
+                    hero_media: serde_json::json!({}),
+                    config_version: 1,
+                })
+                .collect()
+        }
+    };
     Ok(Json(out))
 }
 
@@ -111,11 +137,36 @@ async fn theme_detail(
     )
     .bind(&slug)
     .fetch_optional(&state.pool)
-    .await
-    .map_err(|e| ApiError::Internal(e.into()))?
-    .ok_or(ApiError::NotFound)?;
+    .await;
 
-    let v = serde_json::to_value(&row).map_err(|e| ApiError::Internal(e.into()))?;
+    let v = match row {
+        Ok(Some(row)) => serde_json::to_value(&row).map_err(|e| ApiError::Internal(e.into()))?,
+        Ok(None) => return Err(ApiError::NotFound),
+        Err(_) => {
+            let (id, slug, name, summary) = sqlx::query_as::<_, (Uuid, String, String, String)>(
+                r#"
+                SELECT id, slug, name, COALESCE(summary, '') as summary
+                FROM themes
+                WHERE slug = $1
+                "#,
+            )
+            .bind(&slug)
+            .fetch_optional(&state.pool)
+            .await
+            .map_err(|e| ApiError::Internal(e.into()))?
+            .ok_or(ApiError::NotFound)?;
+            serde_json::json!({
+                "id": id,
+                "slug": slug,
+                "name": name,
+                "summary": summary,
+                "kind": "general",
+                "hero_media": {},
+                "config_version": 1,
+                "config_json": {},
+            })
+        }
+    };
 
     if let Some(ref redis) = state.redis {
         let mut conn = redis.clone();

@@ -1,5 +1,5 @@
 # Multi-stage build: API + worker binaries (same image, different start command on Railway).
-FROM rust:1.85-bookworm AS builder
+FROM rust:1.88-bookworm AS builder
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./

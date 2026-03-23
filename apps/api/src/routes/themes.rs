@@ -46,7 +46,15 @@ struct ThemeListItem {
 async fn list_themes(State(state): State<AppState>, _user: AuthUser) -> ApiResult<Json<Vec<ThemeListItem>>> {
     let rows = sqlx::query_as::<_, ThemeRow>(
         r#"
-        SELECT id, slug, name, kind::text as kind, summary, hero_media, config_version, config_json
+        SELECT
+            id,
+            slug,
+            name,
+            kind::text as kind,
+            COALESCE(summary, '') as summary,
+            COALESCE(hero_media, '{}'::jsonb) as hero_media,
+            COALESCE(config_version, 1) as config_version,
+            COALESCE(config_json, '{}'::jsonb) as config_json
         FROM themes
         WHERE active = true AND deleted_at IS NULL
         ORDER BY name
@@ -88,7 +96,15 @@ async fn theme_detail(
 
     let row = sqlx::query_as::<_, ThemeRow>(
         r#"
-        SELECT id, slug, name, kind::text as kind, summary, hero_media, config_version, config_json
+        SELECT
+            id,
+            slug,
+            name,
+            kind::text as kind,
+            COALESCE(summary, '') as summary,
+            COALESCE(hero_media, '{}'::jsonb) as hero_media,
+            COALESCE(config_version, 1) as config_version,
+            COALESCE(config_json, '{}'::jsonb) as config_json
         FROM themes
         WHERE slug = $1 AND active = true AND deleted_at IS NULL
         "#,

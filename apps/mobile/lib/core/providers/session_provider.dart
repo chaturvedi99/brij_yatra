@@ -27,13 +27,20 @@ class SessionState {
 
   bool get isLoggedIn {
     if (AppFlags.useFirebaseAuth) {
-      return FirebaseAuth.instance.currentUser != null &&
-          userId != null &&
-          userId!.isNotEmpty;
+      try {
+        return FirebaseAuth.instance.currentUser != null &&
+            userId != null &&
+            userId!.isNotEmpty;
+      } catch (_) {
+        // Test environments may not initialize Firebase.
+        return false;
+      }
     }
     return token != null && token!.isNotEmpty;
   }
   bool get isGuide => role == 'guide';
+  bool get isAdmin => role == 'admin';
+  bool get isTraveler => role == null || role == 'traveler';
 }
 
 class SessionNotifier extends Notifier<SessionState> {

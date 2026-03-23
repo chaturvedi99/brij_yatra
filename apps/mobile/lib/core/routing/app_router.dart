@@ -5,6 +5,7 @@ import '../providers/session_provider.dart';
 import '../../features/admin/admin_dashboard_screen.dart';
 import '../../features/auth/sign_in_screen.dart';
 import '../../features/booking/booking_wizard_screen.dart';
+import '../../features/booking/booking_history_screen.dart';
 import '../../features/guide/guide_group_screen.dart';
 import '../../features/guide/guide_home_screen.dart';
 import '../../features/groups/group_dashboard_screen.dart';
@@ -34,6 +35,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return '/auth';
       }
       if (session.isLoggedIn && loc == '/auth') {
+        if (session.isAdmin) return '/admin';
         return session.isGuide ? '/g/home' : '/home';
       }
       return null;
@@ -78,7 +80,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
       GoRoute(path: '/settings', builder: (context, state) => const ProfileScreen()),
       GoRoute(path: '/support', builder: (context, state) => const SupportScreen()),
-      GoRoute(path: '/bookings', builder: (context, state) => const ThemeListScreen()),
+      GoRoute(path: '/bookings', builder: (context, state) => const BookingHistoryScreen()),
       GoRoute(path: '/donations', builder: (context, state) => const SupportScreen()),
       GoRoute(
         path: '/admin',

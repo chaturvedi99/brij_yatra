@@ -14,6 +14,7 @@ class GuideGroupScreen extends ConsumerStatefulWidget {
 
 class _GuideGroupScreenState extends ConsumerState<GuideGroupScreen> {
   final _otp = TextEditingController();
+  final _announcement = TextEditingController();
   String? _msg;
   Map<String, dynamic>? _detail;
 
@@ -29,13 +30,38 @@ class _GuideGroupScreenState extends ConsumerState<GuideGroupScreen> {
   }
 
   Future<void> _startTrip() async {
+    final otp = _otp.text.trim();
+    if (otp.length < 4) {
+      setState(() => _msg = 'Enter a valid trip OTP from the traveler leader.');
+      return;
+    }
     final client = ref.read(apiClientProvider);
     try {
       await client.postJson('/guide/groups/${widget.groupId}/trip/start', {
-        'otp': _otp.text,
+        'otp': otp,
       });
       setState(() => _msg = 'Trip started');
       await _load();
+    } catch (e) {
+      setState(() => _msg = e.toString());
+    }
+  }
+
+  Future<void> _announce() async {
+    final msg = _announcement.text.trim();
+    if (msg.isEmpty) {
+      setState(() => _msg = 'Announcement message cannot be empty.');
+      return;
+    }
+    final client = ref.read(apiClientProvider);
+    try {
+      await client.postJson('/guide/groups/${widget.groupId}/announce', {
+        'message': msg,
+      });
+      setState(() {
+        _announcement.clear();
+        _msg = 'Announcement sent to group.';
+      });
     } catch (e) {
       setState(() => _msg = e.toString());
     }
@@ -50,6 +76,7 @@ class _GuideGroupScreenState extends ConsumerState<GuideGroupScreen> {
   @override
   void dispose() {
     _otp.dispose();
+    _announcement.dispose();
     super.dispose();
   }
 
@@ -81,6 +108,21 @@ class _GuideGroupScreenState extends ConsumerState<GuideGroupScreen> {
                 ),
                 const SizedBox(height: 8),
                 FilledButton(onPressed: _startTrip, child: const Text('Start trip')),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _announcement,
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    labelText: 'Broadcast update to travelers',
+                    hintText: 'Example: Meet at Gate 2 in 10 minutes.',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                FilledButton.tonal(
+                  onPressed: _announce,
+                  child: const Text('Send announcement'),
+                ),
                 const SizedBox(height: 24),
                 Text('Mark stop complete', style: Theme.of(context).textTheme.titleMedium),
                 const Text(
@@ -107,6 +149,9 @@ class _StopCompleter extends ConsumerStatefulWidget {
 class _StopCompleterState extends ConsumerState<_StopCompleter> {
   final _sid = TextEditingController();
   String? _note;
+  final _uuidLike = RegExp(
+    r'^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$',
+  );
 
   @override
   void dispose() {
@@ -124,10 +169,15 @@ class _StopCompleterState extends ConsumerState<_StopCompleter> {
         ),
         FilledButton.tonal(
           onPressed: () async {
+            final sid = _sid.text.trim();
+            if (!_uuidLike.hasMatch(sid)) {
+              setState(() => _note = 'Enter a valid itinerary UUID.');
+              return;
+            }
             final client = ref.read(apiClientProvider);
             try {
               await client.postJson(
-                '/guide/groups/${widget.groupId}/stops/${_sid.text}/complete',
+                '/guide/groups/${widget.groupId}/stops/$sid/complete',
                 {'notes': 'completed from app'},
               );
               setState(() => _note = 'Marked complete');

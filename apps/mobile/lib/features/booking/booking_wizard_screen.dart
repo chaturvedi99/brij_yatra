@@ -76,11 +76,21 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
     }
     final meta = <String, dynamic>{};
     for (final k in _metaKeys) {
-      meta[k] = _metaCtrls[k]!.text;
+      final v = _metaCtrls[k]!.text.trim();
+      if (v.isEmpty) {
+        setState(() => _error = 'Please fill required field: $k');
+        return;
+      }
+      meta[k] = v;
     }
     final needs = <String, dynamic>{};
     for (final k in _needsKeys) {
-      needs[k] = _needsCtrls[k]!.text;
+      final v = _needsCtrls[k]!.text.trim();
+      if (v.isEmpty) {
+        setState(() => _error = 'Please fill required preference: $k');
+        return;
+      }
+      needs[k] = v;
     }
     final fmt = DateFormat('yyyy-MM-dd');
     try {
@@ -183,7 +193,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                   },
                   child: Text(_dates == null
                       ? 'Select travel dates'
-                      : '${_dates!.start} → ${_dates!.end}'),
+                      : '${DateFormat('yyyy-MM-dd').format(_dates!.start)} -> ${DateFormat('yyyy-MM-dd').format(_dates!.end)}'),
                 ),
               ],
             ),
@@ -253,6 +263,15 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: _error == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
     );
   }
 }

@@ -1,0 +1,46 @@
+name: BrijYatra CI
+
+on:
+  push:
+    paths:
+      - "brijyatra/**"
+  pull_request:
+    paths:
+      - "brijyatra/**"
+
+defaults:
+  run:
+    working-directory: brijyatra
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo fmt check
+        working-directory: brijyatra/apps/api
+        run: cargo fmt --all -- --check
+      - name: cargo clippy
+        working-directory: brijyatra/apps/api
+        run: cargo clippy --all-targets -- -D warnings
+      - name: cargo test
+        working-directory: brijyatra/apps/api
+        run: cargo test
+
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: pub get
+        working-directory: brijyatra/apps/mobile
+        run: flutter pub get
+      - name: analyze
+        working-directory: brijyatra/apps/mobile
+        run: flutter analyze --no-fatal-infos
+      - name: test
+        working-directory: brijyatra/apps/mobile
+        run: flutter test

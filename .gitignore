@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment & secrets (keep .env.example committed)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE
+.idea/
+*.iml
+
+# Rust (all crates)
+**/target/
+**/*.rs.bk
+
+# Dart / Flutter
+**/.dart_tool/
+**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# Logs & temp
+*.log
+*.tmp
+*.swp
+*~
